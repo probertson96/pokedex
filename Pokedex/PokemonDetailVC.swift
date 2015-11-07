@@ -19,8 +19,8 @@ class PokemonDetailVC: UIViewController {
     @IBOutlet weak var attackLabel: UILabel!
     @IBOutlet weak var weightLabel: UILabel!
     @IBOutlet weak var defenseLabel: UILabel!
-    @IBOutlet weak var currentEvolution: UIImageView!
-    @IBOutlet weak var nextEvolution: UIImageView!
+    @IBOutlet weak var currentEvolutionImage: UIImageView!
+    @IBOutlet weak var nextEvolutionImage: UIImageView!
     @IBOutlet weak var evolutionTextLabel: UILabel!
     
     
@@ -31,7 +31,47 @@ class PokemonDetailVC: UIViewController {
         super.viewDidLoad()
         
         nameLabel.text = pokemon.name
+        let image = UIImage(named: "\(pokemon.pokedexId)")
+        mainImage.image = image
+        currentEvolutionImage.image = image
+        
+        
+        pokemon.downloadPokemonDetails { () -> () in
+            self.updateUI()
+        }
 
+    }
+    
+    func updateUI() {
+        descriptionLabel.text = pokemon.description
+        typeLabel.text = pokemon.type
+        defenseLabel.text = pokemon.defense
+        attackLabel.text = pokemon.attack
+        heightLabel.text = pokemon.height
+        pokedexIdLabel.text = "\(pokemon.pokedexId)"
+        weightLabel.text = pokemon.weight
+        
+        if pokemon.nextEvolutionId == "" {
+            evolutionTextLabel.text = "No Evolutions!"
+            nextEvolutionImage.hidden = true
+        } else if pokemon.nextEvolutionLevel == ""{
+            var str = "Next Evolution: \(pokemon.nextEvolutionText)"
+            evolutionTextLabel.text = str
+            nextEvolutionImage.hidden = false
+            nextEvolutionImage.image = UIImage(named: pokemon.nextEvolutionId)
+        
+        } else {
+            nextEvolutionImage.hidden = false
+            nextEvolutionImage.image = UIImage(named: pokemon.nextEvolutionId)
+            var str = "Next Evolution: \(pokemon.nextEvolutionText)"
+            
+            if pokemon.nextEvolutionLevel != "" {
+                str += " - LVL \(pokemon.nextEvolutionLevel)"
+                
+                evolutionTextLabel.text = str
+            }
+        }
+        
     }
 
     @IBAction func backButtonPressed(sender: AnyObject) {
